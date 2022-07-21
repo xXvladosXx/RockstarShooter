@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,36 +10,36 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
     {
         private float _startTime;
 
-        public PlayerRunningState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
 
-        public override void Enter()
+
+        public override List<IState> Enter()
         {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = GroundedData.RunData.SpeedModifier;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = GroundedData.RunData.SpeedModifier;
 
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.RunParameterHash);
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.MediumForce;
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.RunParameterHash);
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.MediumForce;
 
             _startTime = Time.time;
             
-            PlayerStateMachine.ReusableData.MaxSmoothModifier = GroundedData.RunData.SmoothInputSpeed;
+            PlayerMovementStateMachine.ReusableData.MaxSmoothModifier = GroundedData.RunData.SmoothInputSpeed;
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
             
-            StopAnimation(PlayerStateMachine.Player.AnimationData.RunParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.RunParameterHash);
         }
 
         public override void Update()
         {
             base.Update();
             
-            if (!PlayerStateMachine.ReusableData.ShouldWalk)
+            if (!PlayerMovementStateMachine.ReusableData.ShouldWalk)
             {
                 return;
             }
@@ -52,14 +54,14 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
         private void StopRunning()
         {
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
 
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.WalkingFiringState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.WalkingFiringState);
         }
 
         protected override void OnWalkToggleStarted(InputAction.CallbackContext context)
@@ -69,7 +71,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.MediumStoppingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.MediumStoppingState);
 
             base.OnMovementCanceled(context);
         }

@@ -1,57 +1,59 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 
 namespace StateMachine
 {
-    public abstract class StateMachine
+    public abstract class StateMachine<T> where T : IState
     {
-        private IState _currentState;
+        private T _currentState;
 
-        public void ChangeState(IState newState)
+        public virtual List<IState> ChangeState(T newState)
         {
             _currentState?.Exit();
 
             _currentState = newState;
 
-            _currentState.Enter();
+            return _currentState.Enter();
         }
 
-        public void HandleInput()
+        public virtual void HandleInput()
         {
             _currentState?.HandleInput();
         }
 
-        public void Update()
+        public virtual void Update()
         {
             _currentState?.Update();
         }
 
-        public void PhysicsUpdate()
+        public virtual void PhysicsUpdate()
         {
             _currentState?.FixedUpdate();
         }
 
-        public void OnTriggerEnter(Collider collider)
+        public virtual void OnTriggerEnter(Collider collider)
         {
             _currentState?.OnTriggerEnter(collider);
         }
 
-        public void OnTriggerExit(Collider collider)
+        public virtual void OnTriggerExit(Collider collider)
         {
             _currentState?.OnTriggerExit(collider);
         }
 
-        public void OnAnimationEnterEvent()
+        public virtual void OnAnimationEnterEvent()
         {
             _currentState?.OnAnimationEnterEvent();
         }
 
-        public void OnAnimationExitEvent()
+        public virtual void OnAnimationExitEvent()
         {
             _currentState?.OnAnimationExitEvent();
         }
 
-        public void OnAnimationTransitionEvent()
+        public virtual void OnAnimationTransitionEvent()
         {
             _currentState?.OnAnimationTransitionEvent();
         }

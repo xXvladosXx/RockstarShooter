@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,23 +11,23 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
         private bool _shouldKeepRotating;
         private bool _canStartFalling;
 
-        public PlayerJumpingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
-
-        public override void Enter()
+       
+        public override List<IState> Enter()
         {
             base.Enter();
 
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = 0f;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = 0f;
 
-            PlayerStateMachine.ReusableData.MovementDecelerationForce = AirborneData.JumpData.DecelerationForce;
+            PlayerMovementStateMachine.ReusableData.MovementDecelerationForce = AirborneData.JumpData.DecelerationForce;
 
-            PlayerStateMachine.ReusableData.RotationData = AirborneData.JumpData.RotationData;
+            PlayerMovementStateMachine.ReusableData.RotationData = AirborneData.JumpData.RotationData;
 
-            _shouldKeepRotating = PlayerStateMachine.ReusableData.MovementInput != Vector2.zero;
+            _shouldKeepRotating = PlayerMovementStateMachine.ReusableData.MovementInput != Vector2.zero;
 
             Jump();
+            
+            return null;
+
         }
 
         public override void Exit()
@@ -51,7 +53,7 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.FallingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.FallingState);
         }
 
         public override void FixedUpdate()
@@ -71,15 +73,15 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
 
         private void Jump()
         {
-            Vector3 jumpForce = PlayerStateMachine.ReusableData.CurrentJumpForce;
+            Vector3 jumpForce = PlayerMovementStateMachine.ReusableData.CurrentJumpForce;
 
-            Vector3 jumpDirection = PlayerStateMachine.Player.transform.forward;
+            Vector3 jumpDirection = PlayerMovementStateMachine.Player.transform.forward;
 
             if (_shouldKeepRotating)
             {
                 UpdateTargetRotation(GetMovementInputDirection());
 
-                jumpDirection = GetTargetRotationDirection(PlayerStateMachine.ReusableData.CurrentTargetRotation.y);
+                jumpDirection = GetTargetRotationDirection(PlayerMovementStateMachine.ReusableData.CurrentTargetRotation.y);
             }
 
             jumpForce.x *= jumpDirection.x;
@@ -89,16 +91,16 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
 
             ResetVelocity();
 
-            PlayerStateMachine.Player.Rigidbody.AddForce(jumpForce, ForceMode.VelocityChange);
+            PlayerMovementStateMachine.Player.Rigidbody.AddForce(jumpForce, ForceMode.VelocityChange);
         }
 
         private Vector3 GetJumpForceOnSlope(Vector3 jumpForce)
         {
-            Vector3 capsuleColliderCenterInWorldSpace = PlayerStateMachine.Player.ResizableCapsuleCollider.CapsuleColliderData.Collider.bounds.center;
+            Vector3 capsuleColliderCenterInWorldSpace = PlayerMovementStateMachine.Player.ResizableCapsuleCollider.CapsuleColliderData.Collider.bounds.center;
 
             Ray downwardsRayFromCapsuleCenter = new Ray(capsuleColliderCenterInWorldSpace, Vector3.down);
 
-            if (Physics.Raycast(downwardsRayFromCapsuleCenter, out RaycastHit hit, AirborneData.JumpData.JumpToGroundRayDistance, PlayerStateMachine.Player.LayerData.GroundLayer, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(downwardsRayFromCapsuleCenter, out RaycastHit hit, AirborneData.JumpData.JumpToGroundRayDistance, PlayerMovementStateMachine.Player.LayerData.GroundLayer, QueryTriggerInteraction.Ignore))
             {
                 float groundAngle = Vector3.Angle(hit.normal, -downwardsRayFromCapsuleCenter.direction);
 

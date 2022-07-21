@@ -1,25 +1,27 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 
 namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 {
     public class PlayerLandingState : PlayerGroundedState
     {
-        public PlayerLandingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
 
-        public override void Enter()
+        public override List<IState> Enter()
         {
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.LandingParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.LandingParameterHash);
+            
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.LandingParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.LandingParameterHash);
         }
     }
 }

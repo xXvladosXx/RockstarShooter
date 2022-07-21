@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace GenshinImpactMovementSystem
+namespace AnimatorStateMachine.StateMachine
 {
     public interface IState
     {
-        public void Enter();
+        public List<IState> Enter();
         public void Exit();
         public void HandleInput();
         public void Update();

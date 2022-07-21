@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 
@@ -5,40 +7,38 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
 {
     public class PlayerIdlingState : PlayerGroundedState
     {
-        public PlayerIdlingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+        public override List<IState> Enter()
         {
-        }
-
-        public override void Enter()
-        {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = 0f;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = 0f;
 
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.IdleParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.IdleParameterHash);
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StationaryForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StationaryForce;
 
             ResetVelocity();
             
-            if (PlayerStateMachine.ReusableData.ShouldFire)
+            if (PlayerMovementStateMachine.ReusableData.ShouldFire)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.PlayerFiringState);
+                //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerFiringState);
             }
+
+            return null;
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.IdleParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.IdleParameterHash);
         }
 
         public override void Update()
         {
             base.Update();
             
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
                 return;
             }

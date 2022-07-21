@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using Characters.Player.StateMachines.Movement.States.Grounded.Combat;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,31 +10,29 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
     {
         private bool _shouldKeepRotating;
 
-        public PlayerDashingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+        public override List<IState> Enter()
         {
-        }
-
-        public override void Enter()
-        {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = GroundedData.DashData.SpeedModifier;
-            PlayerStateMachine.ReusableData.MaxSmoothModifier = GroundedData.RunData.SmoothInputSpeed;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = GroundedData.DashData.SpeedModifier;
+            PlayerMovementStateMachine.ReusableData.MaxSmoothModifier = GroundedData.RunData.SmoothInputSpeed;
 
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.DashParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.DashParameterHash);
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
 
-            PlayerStateMachine.ReusableData.RotationData = GroundedData.DashData.RotationData;
+            PlayerMovementStateMachine.ReusableData.RotationData = GroundedData.DashData.RotationData;
 
-            _shouldKeepRotating = PlayerStateMachine.ReusableData.MovementInput != Vector2.zero;
+            _shouldKeepRotating = PlayerMovementStateMachine.ReusableData.MovementInput != Vector2.zero;
+
+            return null;
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.DashParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.DashParameterHash);
 
             SetBaseRotationData();
         }
@@ -57,22 +57,22 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
 
         public override void OnAnimationTransitionEvent()
         {
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.HardStoppingState);
+                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
 
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.SprintingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.SprintingState);
         }
 
         protected override void AddInputActionsCallbacks()
         {
             base.AddInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.performed += OnMovementPerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Dash.performed -= OnDashStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.performed += OnMovementPerformed;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Dash.performed -= OnDashStarted;
 
         }
 
@@ -80,7 +80,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
         {
             base.RemoveInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.performed -= OnMovementPerformed;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.performed -= OnMovementPerformed;
         }
 
         protected override void OnMovementPerformed(InputAction.CallbackContext context)
@@ -92,20 +92,20 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
 
         private void Dash()
         {
-            Vector3 dashDirection = PlayerStateMachine.Player.transform.forward;
+            Vector3 dashDirection = PlayerMovementStateMachine.Player.transform.forward;
 
             dashDirection.y = 0f;
 
             UpdateTargetRotation(dashDirection, false);
 
-            if (PlayerStateMachine.ReusableData.MovementInput != Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput != Vector2.zero)
             {
                 UpdateTargetRotation(GetMovementInputDirection());
 
-                dashDirection = GetTargetRotationDirection(PlayerStateMachine.ReusableData.CurrentTargetRotation.y);
+                dashDirection = GetTargetRotationDirection(PlayerMovementStateMachine.ReusableData.CurrentTargetRotation.y);
             }
 
-            PlayerStateMachine.Player.Rigidbody.velocity = dashDirection * GetMovementSpeed(false);
+            PlayerMovementStateMachine.Player.Rigidbody.velocity = dashDirection * GetMovementSpeed(false);
         }
     }
 }

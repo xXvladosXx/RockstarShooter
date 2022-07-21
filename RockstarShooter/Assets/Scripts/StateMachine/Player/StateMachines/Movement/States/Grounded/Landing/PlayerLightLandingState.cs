@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 
@@ -5,26 +7,26 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 {
     public class PlayerLightLandingState : PlayerLandingState
     {
-        public PlayerLightLandingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
 
-        public override void Enter()
+        public override List<IState> Enter()
         {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = 0;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = 0;
 
             base.Enter();
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StationaryForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StationaryForce;
 
             ResetVelocity();
+            
+            return null;
+
         }
 
         public override void Update()
         {
             base.Update();
 
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
                 return;
             }
@@ -46,7 +48,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 
         public override void OnAnimationTransitionEvent()
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
         }
     }
 }

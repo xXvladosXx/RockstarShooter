@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine.InputSystem;
 
@@ -5,30 +7,31 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 {
     public class PlayerHardLandingState : PlayerLandingState
     {
-        public PlayerHardLandingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
 
-        public override void Enter()
+
+        public override List<IState> Enter()
         {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = 0f;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = 0f;
 
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.HardLandParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.HardLandParameterHash);
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.Disable();
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.Disable();
 
             ResetVelocity();
+            
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.HardLandParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.HardLandParameterHash);
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.Enable();
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.Enable();
         }
 
         public override void FixedUpdate()
@@ -45,26 +48,26 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 
         public override void OnAnimationExitEvent()
         {
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.Enable();
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.Enable();
         }
 
         public override void OnAnimationTransitionEvent()
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
         }
 
         protected override void AddInputActionsCallbacks()
         {
             base.AddInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.started += OnMovementStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.started += OnMovementStarted;
         }
 
         protected override void RemoveInputActionsCallbacks()
         {
             base.RemoveInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.started -= OnMovementStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.started -= OnMovementStarted;
         }
 
         private void OnMovementStarted(InputAction.CallbackContext context)
@@ -74,12 +77,12 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 
         protected override void OnMove()
         {
-            if (PlayerStateMachine.ReusableData.ShouldWalk)
+            if (PlayerMovementStateMachine.ReusableData.ShouldWalk)
             {
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.RunningState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
         }
 
         protected override void OnJumpStarted(InputAction.CallbackContext context)

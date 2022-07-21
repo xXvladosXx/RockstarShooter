@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 
@@ -7,28 +9,28 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
     {
         private Vector3 _playerPositionOnEnter;
 
-        public PlayerFallingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
-
-        public override void Enter()
+      
+        public override List<IState> Enter()
         {
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.FallParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.FallParameterHash);
 
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = 0f;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = 0f;
 
-            _playerPositionOnEnter = PlayerStateMachine.Player.transform.position;
+            _playerPositionOnEnter = PlayerMovementStateMachine.Player.transform.position;
 
             ResetVerticalVelocity();
+            
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.FallParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.FallParameterHash);
         }
 
         public override void FixedUpdate()
@@ -49,7 +51,7 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
 
             Vector3 limitedVelocityForce = new Vector3(0f, -AirborneData.FallData.FallSpeedLimit - playerVerticalVelocity.y, 0f);
 
-            PlayerStateMachine.Player.Rigidbody.AddForce(limitedVelocityForce, ForceMode.VelocityChange);
+            PlayerMovementStateMachine.Player.Rigidbody.AddForce(limitedVelocityForce, ForceMode.VelocityChange);
         }
 
         protected override void ResetSprintState()
@@ -58,23 +60,23 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
 
         protected override void OnContactWithGround(Collider collider)
         {
-            float fallDistance = _playerPositionOnEnter.y - PlayerStateMachine.Player.transform.position.y;
+            float fallDistance = _playerPositionOnEnter.y - PlayerMovementStateMachine.Player.transform.position.y;
 
             if (fallDistance < AirborneData.FallData.MinimumDistanceToBeConsideredHardFall)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.LightLandingState);
+                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.LightLandingState);
 
                 return;
             }
 
-            if (PlayerStateMachine.ReusableData.ShouldWalk && !PlayerStateMachine.ReusableData.ShouldSprint || PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.ShouldWalk && !PlayerMovementStateMachine.ReusableData.ShouldSprint || PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.HardLandingState);
+                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.HardLandingState);
 
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.RollingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.RollingState);
 
         }
     }

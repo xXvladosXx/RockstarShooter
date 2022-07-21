@@ -13,6 +13,7 @@ using Combat;
 using Data.Stats;
 using Data.Stats.Core;
 using Inventory;
+using StateMachine.Player.StateMachines.Combat;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using Utilities;
@@ -55,8 +56,9 @@ namespace StateMachine.Player
         public Transform MainCameraTransform { get; private set; }
         public Camera MainCamera { get; private set; }
 
-
-        private PlayerStateMachine _stateMachine;
+        public PlayerStateMachine PlayerStateMachine { get; private set; }
+        public PlayerRifleStateMachine PlayerCombatStateMachine { get; private set; }
+        
         private List<IModifier> _modifiers = new();
         private void Awake()
         {
@@ -77,18 +79,19 @@ namespace StateMachine.Player
             _modifiers.Add(this);
             
             BonusesController = new BonusesController(_modifiers);
-            _stateMachine = new PlayerStateMachine(this);
+            
+            PlayerStateMachine = new PlayerStateMachine(this);
         }
 
         private void Start()
         {
-            _stateMachine.ChangeState(_stateMachine.IdlingState);
+            PlayerStateMachine.StartState();
         }
 
         private void Update()
         {
-            _stateMachine.HandleInput();
-            _stateMachine.Update();
+            PlayerStateMachine.HandleInput();
+            PlayerStateMachine.Update();
 
             Rig.weight = Mathf.Lerp(Rig.weight, RigWeight, Time.deltaTime * 20);   
 
@@ -97,7 +100,7 @@ namespace StateMachine.Player
 
         private void FixedUpdate()
         {
-            _stateMachine.PhysicsUpdate();
+            PlayerStateMachine.PhysicsUpdate();
         }
 
         public RaycastHit? GetRaycastHitFromMainCamera() =>
@@ -106,27 +109,27 @@ namespace StateMachine.Player
 
         private void OnTriggerEnter(Collider collider)
         {
-            _stateMachine.OnTriggerEnter(collider);
+            PlayerStateMachine.OnTriggerEnter(collider);
         }
 
         private void OnTriggerExit(Collider collider)
         {
-            _stateMachine.OnTriggerExit(collider);
+            PlayerStateMachine.OnTriggerExit(collider);
         }
 
         public void OnAnimationEnterEvent()
         {
-            _stateMachine.OnAnimationEnterEvent();
+            PlayerStateMachine.OnAnimationEnterEvent();
         }
 
         public void OnAnimationExitEvent()
         {
-            _stateMachine.OnAnimationExitEvent();
+            PlayerStateMachine.OnAnimationExitEvent();
         }
 
         public void OnAnimationTransitionEvent()
         {
-            _stateMachine.OnAnimationTransitionEvent();
+            PlayerStateMachine.OnAnimationTransitionEvent();
         }
 
         public void FireFromCurrentWeapon()

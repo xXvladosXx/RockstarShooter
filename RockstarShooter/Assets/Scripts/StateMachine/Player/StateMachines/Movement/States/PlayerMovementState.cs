@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using Characters.Player.Data.States.Airborne;
 using Characters.Player.Data.States.Grounded;
 using GenshinImpactMovementSystem;
@@ -7,30 +9,33 @@ using Utilities;
 
 namespace Characters.Player.StateMachines.Movement.States
 {
-    public class PlayerMovementState : IState
+    public class PlayerMovementState : IMovementState
     {
-        protected readonly PlayerStateMachine PlayerStateMachine;
+        protected PlayerMovementStateMachine PlayerMovementStateMachine { get; private set; }
 
-        protected readonly PlayerGroundedData GroundedData;
-        protected readonly AliveEntityAirborneData AirborneData;
+        protected PlayerGroundedData GroundedData { get; private set; }
+        protected AliveEntityAirborneData AirborneData { get; private set; }
         
-        private Vector2 _screenCenterPoint;
-
-        public PlayerMovementState(PlayerStateMachine playerPlayerStateMachine)
+        public void SetData(PlayerMovementStateMachine playerMovementStateMachine)
         {
-            PlayerStateMachine = playerPlayerStateMachine;
+            PlayerMovementStateMachine = playerMovementStateMachine;
 
-            GroundedData = PlayerStateMachine.Player.StateData.GroundedData;
-            AirborneData = PlayerStateMachine.Player.StateData.AirborneData;
+            GroundedData = PlayerMovementStateMachine.Player.StateData.GroundedData;
+            AirborneData = PlayerMovementStateMachine.Player.StateData.AirborneData;
             
-            _screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
-
             InitializeData();
         }
 
-        public virtual void Enter()
+        public PlayerMovementState()
+        {
+            
+        }
+
+        public virtual List<IState> Enter()
         {
             AddInputActionsCallbacks();
+
+            return null;
         }
 
         public virtual void Exit()
@@ -45,29 +50,29 @@ namespace Characters.Player.StateMachines.Movement.States
 
         public virtual void Update()
         {
-            if (PlayerStateMachine.ReusableData.ShouldDecreaseFireLayer)
+            if (PlayerMovementStateMachine.ReusableData.ShouldDecreaseFireLayer)
             {
-                PlayerStateMachine.ReusableData.FireLayerWeight -= Time.deltaTime;
-                PlayerStateMachine.ReusableData.FireLayerWeight = Mathf.Clamp(PlayerStateMachine.ReusableData.FireLayerWeight, 0f, 1f);
-                PlayerStateMachine.Player.Animator.SetLayerWeight(PlayerStateMachine.Player.AnimationData.FiringLayer, PlayerStateMachine.ReusableData.FireLayerWeight);
+                PlayerMovementStateMachine.ReusableData.FireLayerWeight -= Time.deltaTime;
+                PlayerMovementStateMachine.ReusableData.FireLayerWeight = Mathf.Clamp(PlayerMovementStateMachine.ReusableData.FireLayerWeight, 0f, 1f);
+                PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.FiringLayer, PlayerMovementStateMachine.ReusableData.FireLayerWeight);
             }
             
-            if (PlayerStateMachine.ReusableData.ShouldDecreaseAimLayer)
+            if (PlayerMovementStateMachine.ReusableData.ShouldDecreaseAimLayer)
             {
-                PlayerStateMachine.ReusableData.AimLayerWeight -= Time.deltaTime*3;
-                PlayerStateMachine.ReusableData.AimLayerWeight = Mathf.Clamp(PlayerStateMachine.ReusableData.AimLayerWeight, 0f, 1f);
-                PlayerStateMachine.Player.Animator.SetLayerWeight(PlayerStateMachine.Player.AnimationData.AimingLayer, PlayerStateMachine.ReusableData.AimLayerWeight);
+                PlayerMovementStateMachine.ReusableData.AimLayerWeight -= Time.deltaTime*3;
+                PlayerMovementStateMachine.ReusableData.AimLayerWeight = Mathf.Clamp(PlayerMovementStateMachine.ReusableData.AimLayerWeight, 0f, 1f);
+                PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.AimingLayer, PlayerMovementStateMachine.ReusableData.AimLayerWeight);
             }
             
-            PlayerStateMachine.ReusableData.SmoothModifier = Mathf.Clamp(PlayerStateMachine.ReusableData.SmoothModifier,
-                0,PlayerStateMachine.ReusableData.MaxSmoothModifier);
+            PlayerMovementStateMachine.ReusableData.SmoothModifier = Mathf.Clamp(PlayerMovementStateMachine.ReusableData.SmoothModifier,
+                0,PlayerMovementStateMachine.ReusableData.MaxSmoothModifier);
             
-            PlayerStateMachine.ReusableData.MouseWorldPosition = Vector3.zero;
+            PlayerMovementStateMachine.ReusableData.MouseWorldPosition = Vector3.zero;
 
-            RaycastHit? raycastHit = PlayerStateMachine.Player.GetRaycastHitFromMainCamera();
+            RaycastHit? raycastHit = PlayerMovementStateMachine.Player.GetRaycastHitFromMainCamera();
 
-            PlayerStateMachine.Player.Aim.transform.position = (Vector3) raycastHit?.point;
-                PlayerStateMachine.ReusableData.MouseWorldPosition = (Vector3) raycastHit?.point;
+            PlayerMovementStateMachine.Player.Aim.transform.position = (Vector3) raycastHit?.point;
+                PlayerMovementStateMachine.ReusableData.MouseWorldPosition = (Vector3) raycastHit?.point;
         }
 
         public virtual void FixedUpdate()
@@ -77,7 +82,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         public virtual void OnTriggerEnter(Collider collider)
         {
-            if (PlayerStateMachine.Player.LayerData.IsGroundLayer(collider.gameObject.layer))
+            if (PlayerMovementStateMachine.Player.LayerData.IsGroundLayer(collider.gameObject.layer))
             {
                 OnContactWithGround(collider);
 
@@ -87,7 +92,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         public virtual void OnTriggerExit(Collider collider)
         {
-            if (PlayerStateMachine.Player.LayerData.IsGroundLayer(collider.gameObject.layer))
+            if (PlayerMovementStateMachine.Player.LayerData.IsGroundLayer(collider.gameObject.layer))
             {
                 OnContactWithGroundExited(collider);
 
@@ -106,7 +111,7 @@ namespace Characters.Player.StateMachines.Movement.States
         public virtual void OnAnimationTransitionEvent()
         {
         }
-
+        
         private void InitializeData()
         {
             SetBaseRotationData();
@@ -114,59 +119,55 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected void SetBaseRotationData()
         {
-            PlayerStateMachine.ReusableData.RotationData = GroundedData.BaseRotationData;
+            PlayerMovementStateMachine.ReusableData.RotationData = GroundedData.BaseRotationData;
 
-            PlayerStateMachine.ReusableData.TimeToReachTargetRotation = PlayerStateMachine.ReusableData.RotationData.TargetRotationReachTime;
+            PlayerMovementStateMachine.ReusableData.TimeToReachTargetRotation = PlayerMovementStateMachine.ReusableData.RotationData.TargetRotationReachTime;
         }
 
         protected void StartAnimation(int animationHash)
         {
-            PlayerStateMachine.Player.Animator.SetBool(animationHash, true);
+            PlayerMovementStateMachine.Player.Animator.SetBool(animationHash, true);
         }
 
         protected void StopAnimation(int animationHash)
         {
-            PlayerStateMachine.Player.Animator.SetBool(animationHash, false);
+            PlayerMovementStateMachine.Player.Animator.SetBool(animationHash, false);
         }
 
         protected void SetSpeedAnimation(int animationHash, float value, float dampTime)
         {
-            PlayerStateMachine.Player.Animator.SetFloat(animationHash, value, dampTime, UnityEngine.Time.deltaTime);
+            PlayerMovementStateMachine.Player.Animator.SetFloat(animationHash, value, dampTime, UnityEngine.Time.deltaTime);
         }
         
         protected void SetSpeedAnimation(int animationHash, float value)
         {
-            PlayerStateMachine.Player.Animator.SetFloat(animationHash, value);
+            PlayerMovementStateMachine.Player.Animator.SetFloat(animationHash, value);
         }
         
         protected virtual void AddInputActionsCallbacks()
         {
-            PlayerStateMachine.Player.Input.PlayerActions.WalkToggle.started += OnWalkToggleStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.WalkToggle.started += OnWalkToggleStarted;
 
-            PlayerStateMachine.Player.Input.PlayerActions.Look.started += OnMouseMovementStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Look.started += OnMouseMovementStarted;
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.performed += OnMovementPerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.canceled += OnMovementCanceled;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.performed += OnMovementPerformed;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.canceled += OnMovementCanceled;
             
-            PlayerStateMachine.Player.Input.PlayerActions.Aim.performed += OnAimPerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Fire.performed += OnFirePerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Fire.canceled += OnFireCanceled;
+          
         }
 
         
 
         protected virtual void RemoveInputActionsCallbacks()
         {
-            PlayerStateMachine.Player.Input.PlayerActions.WalkToggle.started -= OnWalkToggleStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.WalkToggle.started -= OnWalkToggleStarted;
 
-            PlayerStateMachine.Player.Input.PlayerActions.Look.started -= OnMouseMovementStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Look.started -= OnMouseMovementStarted;
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.performed -= OnMovementPerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.canceled -= OnMovementCanceled;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.performed -= OnMovementPerformed;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.canceled -= OnMovementCanceled;
             
-            PlayerStateMachine.Player.Input.PlayerActions.Aim.performed -= OnAimPerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Fire.performed -= OnFirePerformed;
-            PlayerStateMachine.Player.Input.PlayerActions.Fire.canceled -= OnFireCanceled;
+           
         }
 
         protected virtual void OnFireCanceled(InputAction.CallbackContext obj)
@@ -177,7 +178,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected virtual void OnWalkToggleStarted(InputAction.CallbackContext context)
         {
-            PlayerStateMachine.ReusableData.ShouldWalk = !PlayerStateMachine.ReusableData.ShouldWalk;
+            PlayerMovementStateMachine.ReusableData.ShouldWalk = !PlayerMovementStateMachine.ReusableData.ShouldWalk;
         }
 
         private void OnMouseMovementStarted(InputAction.CallbackContext context)
@@ -194,23 +195,23 @@ namespace Characters.Player.StateMachines.Movement.States
         
         protected virtual void OnAimPerformed(InputAction.CallbackContext obj)
         {
-            PlayerStateMachine.Player.PlayerCameraSwitcher.SwitchToAimCamera();
+            PlayerMovementStateMachine.Player.PlayerCameraSwitcher.SwitchToAimCamera();
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.PlayerAimingState);
+            //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerAimingState);
         }
         
         protected virtual void OnFirePerformed(InputAction.CallbackContext obj)
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.PlayerFiringState);
+            //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerFiringState);
         }
         private void ReadMovementInput()
         {
-            PlayerStateMachine.ReusableData.MovementInput = PlayerStateMachine.Player.Input.PlayerActions.Movement.ReadValue<Vector2>();
+            PlayerMovementStateMachine.ReusableData.MovementInput = PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.ReadValue<Vector2>();
         }
 
         protected void MoveAccordingCameraPosition()
         {
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero || PlayerStateMachine.ReusableData.MovementSpeedModifier == 0f)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero || PlayerMovementStateMachine.ReusableData.MovementSpeedModifier == 0f)
             {
                 return;
             }
@@ -220,18 +221,18 @@ namespace Characters.Player.StateMachines.Movement.States
             float movementSpeed = GetSmoothMovementSpeed();
             Vector3 currentPlayerHorizontalVelocity = GetPlayerHorizontalVelocity();
 
-            PlayerStateMachine.Player.Rigidbody.AddForce(targetRotationDirection * movementSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
+            PlayerMovementStateMachine.Player.Rigidbody.AddForce(targetRotationDirection * movementSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
         }
         protected void MoveWithAimLocked()
         {
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero || PlayerStateMachine.ReusableData.MovementSpeedModifier == 0f)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero || PlayerMovementStateMachine.ReusableData.MovementSpeedModifier == 0f)
             {
                 return;
             }
             
             Vector3 movementDirection = GetMovementInputDirection();
-            var forward = PlayerStateMachine.Player.MainCameraTransform.forward;
-            var right = PlayerStateMachine.Player.MainCameraTransform.right;
+            var forward = PlayerMovementStateMachine.Player.MainCameraTransform.forward;
+            var right = PlayerMovementStateMachine.Player.MainCameraTransform.right;
 
             forward.y = 0;
             right.y = 0;
@@ -244,26 +245,26 @@ namespace Characters.Player.StateMachines.Movement.States
             float movementSpeed = GetSmoothMovementSpeed();
             Vector3 currentPlayerHorizontalVelocity = GetPlayerHorizontalVelocity();
 
-            PlayerStateMachine.Player.Rigidbody.AddForce(desiredMovement * movementSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
+            PlayerMovementStateMachine.Player.Rigidbody.AddForce(desiredMovement * movementSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
         }
 
         protected void LockToAim()
         {
-            Vector3 worldAimTarget = PlayerStateMachine.ReusableData.MouseWorldPosition;
-            var transform = PlayerStateMachine.Player.transform;
+            Vector3 worldAimTarget = PlayerMovementStateMachine.ReusableData.MouseWorldPosition;
+            var transform = PlayerMovementStateMachine.Player.transform;
             worldAimTarget.y = transform.position.y;
             Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
 
-            PlayerStateMachine.Player.transform.forward = Vector3.Lerp(PlayerStateMachine.Player.transform.forward, aimDirection, Time.deltaTime * 20);
+            PlayerMovementStateMachine.Player.transform.forward = Vector3.Lerp(PlayerMovementStateMachine.Player.transform.forward, aimDirection, Time.deltaTime * 20);
         }
 
         protected float GetSmoothMovementSpeed()
         {
-            PlayerStateMachine.ReusableData.SmoothModifier += Time.deltaTime;
+            PlayerMovementStateMachine.ReusableData.SmoothModifier += Time.deltaTime;
 
             float movementSpeed = GetMovementSpeed();
 
-            movementSpeed = Mathf.Lerp(0, GetMovementSpeed(), PlayerStateMachine.ReusableData.SmoothModifier);
+            movementSpeed = Mathf.Lerp(0, GetMovementSpeed(), PlayerMovementStateMachine.ReusableData.SmoothModifier);
 
             return movementSpeed;
         }
@@ -271,7 +272,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected Vector3 GetMovementInputDirection()
         {
-            return new Vector3(PlayerStateMachine.ReusableData.MovementInput.x, 0f, PlayerStateMachine.ReusableData.MovementInput.y);
+            return new Vector3(PlayerMovementStateMachine.ReusableData.MovementInput.x, 0f, PlayerMovementStateMachine.ReusableData.MovementInput.y);
         }
 
         private float RotateTowardsTargetRotation(Vector3 direction)
@@ -299,7 +300,7 @@ namespace Characters.Player.StateMachines.Movement.States
                 directionAngle = AddCameraRotationToAngle(directionAngle);
             }
 
-            if (directionAngle != PlayerStateMachine.ReusableData.CurrentTargetRotation.y)
+            if (directionAngle != PlayerMovementStateMachine.ReusableData.CurrentTargetRotation.y)
             {
                 UpdateTargetRotationData(directionAngle);
             }
@@ -321,7 +322,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         private float AddCameraRotationToAngle(float angle)
         {
-            angle += PlayerStateMachine.Player.MainCameraTransform.eulerAngles.y;
+            angle += PlayerMovementStateMachine.Player.MainCameraTransform.eulerAngles.y;
 
             if (angle > 360f)
             {
@@ -333,27 +334,27 @@ namespace Characters.Player.StateMachines.Movement.States
 
         private void UpdateTargetRotationData(float targetAngle)
         {
-            PlayerStateMachine.ReusableData.CurrentTargetRotation.y = targetAngle;
+            PlayerMovementStateMachine.ReusableData.CurrentTargetRotation.y = targetAngle;
 
-            PlayerStateMachine.ReusableData.DampedTargetRotationPassedTime.y = 0f;
+            PlayerMovementStateMachine.ReusableData.DampedTargetRotationPassedTime.y = 0f;
         }
 
         protected void RotateTowardsTargetRotation()
         {
-            float currentYAngle = PlayerStateMachine.Player.Rigidbody.rotation.eulerAngles.y;
+            float currentYAngle = PlayerMovementStateMachine.Player.Rigidbody.rotation.eulerAngles.y;
 
-            if (currentYAngle == PlayerStateMachine.ReusableData.CurrentTargetRotation.y)
+            if (currentYAngle == PlayerMovementStateMachine.ReusableData.CurrentTargetRotation.y)
             {
                 return;
             }
 
-            float smoothedYAngle = Mathf.SmoothDampAngle(currentYAngle, PlayerStateMachine.ReusableData.CurrentTargetRotation.y, ref PlayerStateMachine.ReusableData.DampedTargetRotationCurrentVelocity.y, PlayerStateMachine.ReusableData.TimeToReachTargetRotation.y - PlayerStateMachine.ReusableData.DampedTargetRotationPassedTime.y);
+            float smoothedYAngle = Mathf.SmoothDampAngle(currentYAngle, PlayerMovementStateMachine.ReusableData.CurrentTargetRotation.y, ref PlayerMovementStateMachine.ReusableData.DampedTargetRotationCurrentVelocity.y, PlayerMovementStateMachine.ReusableData.TimeToReachTargetRotation.y - PlayerMovementStateMachine.ReusableData.DampedTargetRotationPassedTime.y);
 
-            PlayerStateMachine.ReusableData.DampedTargetRotationPassedTime.y += Time.deltaTime;
+            PlayerMovementStateMachine.ReusableData.DampedTargetRotationPassedTime.y += Time.deltaTime;
 
             Quaternion targetRotation = Quaternion.Euler(0f, smoothedYAngle, 0f);
 
-            PlayerStateMachine.Player.Rigidbody.MoveRotation(targetRotation);
+            PlayerMovementStateMachine.Player.Rigidbody.MoveRotation(targetRotation);
         }
 
         protected Vector3 GetTargetRotationDirection(float targetRotationAngle)
@@ -363,11 +364,11 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected float GetMovementSpeed(bool shouldConsiderSlopes = true)
         {
-            float movementSpeed = GroundedData.BaseSpeed * PlayerStateMachine.ReusableData.MovementSpeedModifier;
+            float movementSpeed = GroundedData.BaseSpeed * PlayerMovementStateMachine.ReusableData.MovementSpeedModifier;
 
             if (shouldConsiderSlopes)
             {
-                movementSpeed *= PlayerStateMachine.ReusableData.MovementOnSlopesSpeedModifier;
+                movementSpeed *= PlayerMovementStateMachine.ReusableData.MovementOnSlopesSpeedModifier;
             }
 
             return movementSpeed;
@@ -375,7 +376,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected Vector3 GetPlayerHorizontalVelocity()
         {
-            Vector3 playerHorizontalVelocity = PlayerStateMachine.Player.Rigidbody.velocity;
+            Vector3 playerHorizontalVelocity = PlayerMovementStateMachine.Player.Rigidbody.velocity;
 
             playerHorizontalVelocity.y = 0f;
 
@@ -384,7 +385,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected Vector3 GetPlayerVerticalVelocity()
         {
-            return new Vector3(0f, PlayerStateMachine.Player.Rigidbody.velocity.y, 0f);
+            return new Vector3(0f, PlayerMovementStateMachine.Player.Rigidbody.velocity.y, 0f);
         }
 
         protected virtual void OnContactWithGround(Collider collider)
@@ -398,28 +399,28 @@ namespace Characters.Player.StateMachines.Movement.States
 
         protected void ResetVelocity()
         {
-            PlayerStateMachine.Player.Rigidbody.velocity = Vector3.zero;
+            PlayerMovementStateMachine.Player.Rigidbody.velocity = Vector3.zero;
         }
 
         protected void ResetVerticalVelocity()
         {
             Vector3 playerHorizontalVelocity = GetPlayerHorizontalVelocity();
 
-            PlayerStateMachine.Player.Rigidbody.velocity = playerHorizontalVelocity;
+            PlayerMovementStateMachine.Player.Rigidbody.velocity = playerHorizontalVelocity;
         }
 
         protected void DecelerateHorizontally()
         {
             Vector3 playerHorizontalVelocity = GetPlayerHorizontalVelocity();
 
-            PlayerStateMachine.Player.Rigidbody.AddForce(-playerHorizontalVelocity * PlayerStateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
+            PlayerMovementStateMachine.Player.Rigidbody.AddForce(-playerHorizontalVelocity * PlayerMovementStateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
         }
 
         protected void DecelerateVertically()
         {
             Vector3 playerVerticalVelocity = GetPlayerVerticalVelocity();
 
-            PlayerStateMachine.Player.Rigidbody.AddForce(-playerVerticalVelocity * PlayerStateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
+            PlayerMovementStateMachine.Player.Rigidbody.AddForce(-playerVerticalVelocity * PlayerMovementStateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
         }
 
         protected bool IsMovingHorizontally(float minimumMagnitude = 0.1f)

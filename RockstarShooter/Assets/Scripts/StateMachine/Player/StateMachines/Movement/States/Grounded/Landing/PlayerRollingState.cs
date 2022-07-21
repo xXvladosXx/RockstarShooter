@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,33 +8,32 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 {
     public class PlayerRollingState : PlayerLandingState
     {
-        public PlayerRollingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
 
-        public override void Enter()
+        public override List<IState> Enter()
         {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = GroundedData.RollData.SpeedModifier;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = GroundedData.RollData.SpeedModifier;
 
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.RollParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.RollParameterHash);
 
-            PlayerStateMachine.ReusableData.ShouldSprint = false;
+            PlayerMovementStateMachine.ReusableData.ShouldSprint = false;
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.RollParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.RollParameterHash);
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (PlayerStateMachine.ReusableData.MovementInput != Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput != Vector2.zero)
             {
                 return;
             }
@@ -42,9 +43,9 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Landing
 
         public override void OnAnimationTransitionEvent()
         {
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.MediumStoppingState);
+                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.MediumStoppingState);
 
                 return;
             }

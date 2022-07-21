@@ -1,4 +1,4 @@
-﻿using Bonuses;
+﻿/*using Bonuses;
 using Bonuses.CoreBonuses;
 using Characters.Player.StateMachines.Movement.States.Grounded.Moving;
 using UnityEngine;
@@ -8,7 +8,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
 {
     public class PlayerAimingState : PlayerWalkingFiringState
     {
-        public PlayerAimingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+        public PlayerAimingState(PlayerMovementStateMachine playerMovementPlayerMovementStateMachine) : base(playerMovementPlayerMovementStateMachine)
         {            
         }
 
@@ -16,36 +16,36 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
         {
             base.Enter();
             
-            if (PlayerStateMachine.ReusableData.ShouldFire)
+            if (PlayerMovementStateMachine.ReusableData.ShouldFire)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.PlayerAimingFiringState);
+                //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerAimingFiringState);
             }
         }
 
 
         protected override void OnAimPerformed(InputAction.CallbackContext obj)
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
             
-            PlayerStateMachine.Player.PlayerCameraSwitcher.SwitchToDefaultCamera();
+            PlayerMovementStateMachine.Player.PlayerCameraSwitcher.SwitchToDefaultCamera();
         }
         
         protected override void OnDashStarted(InputAction.CallbackContext context)
         {
             base.OnDashStarted(context);
-            PlayerStateMachine.Player.PlayerCameraSwitcher.SwitchToDefaultCamera();
+            PlayerMovementStateMachine.Player.PlayerCameraSwitcher.SwitchToDefaultCamera();
         }
 
         protected override void OnFirePerformed(InputAction.CallbackContext obj)
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.PlayerAimingFiringState);
+            //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerAimingFiringState);
         }
 
         protected override void OnFireCanceled(InputAction.CallbackContext obj)
         {
-            PlayerStateMachine.ReusableData.ShouldFire = false;
+            PlayerMovementStateMachine.ReusableData.ShouldFire = false;
         }
 
         
     }
-}
+}*/

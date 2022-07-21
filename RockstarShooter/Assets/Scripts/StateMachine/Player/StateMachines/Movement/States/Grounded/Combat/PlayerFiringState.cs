@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections;
 using Characters.Player.StateMachines.Movement.States.Grounded.Moving;
 using UnityEngine;
@@ -9,7 +9,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
 {
     public class PlayerFiringState : PlayerWalkingFiringState
     {
-        public PlayerFiringState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+        public PlayerFiringState(PlayerMovementStateMachine playerMovementPlayerMovementStateMachine) : base(playerMovementPlayerMovementStateMachine)
         {
         }
 
@@ -17,34 +17,34 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
         {
             base.Enter();
             
-            PlayerStateMachine.ReusableData.ShouldDecreaseFireLayer = false;
-            PlayerStateMachine.ReusableData.ShouldFire = true;
+            PlayerMovementStateMachine.ReusableData.ShouldDecreaseFireLayer = false;
+            PlayerMovementStateMachine.ReusableData.ShouldFire = true;
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.FiringParameterHash);
-            PlayerStateMachine.Player.Animator.SetLayerWeight(PlayerStateMachine.Player.AnimationData.FiringLayer, 1);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.FiringParameterHash);
+            PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.FiringLayer, 1);
         }
 
       
         protected override void OnFireCanceled(InputAction.CallbackContext obj)
         {
-            PlayerStateMachine.ReusableData.ShouldFire = false;
-            PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+            PlayerMovementStateMachine.ReusableData.ShouldFire = false;
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
         }
 
         protected override void OnDashStarted(InputAction.CallbackContext context)
         {
-            PlayerStateMachine.ReusableData.ShouldFire = false;
+            PlayerMovementStateMachine.ReusableData.ShouldFire = false;
             base.OnDashStarted(context);
         }
 
         public override void Exit()
         {
             base.Exit();
-            PlayerStateMachine.ReusableData.ShouldDecreaseFireLayer = true;
-            PlayerStateMachine.ReusableData.FireLayerWeight = 0;
-            PlayerStateMachine.Player.Animator.SetLayerWeight(PlayerStateMachine.Player.AnimationData.FiringLayer, 0);
-            StopAnimation(PlayerStateMachine.Player.AnimationData.FiringParameterHash);
+            PlayerMovementStateMachine.ReusableData.ShouldDecreaseFireLayer = true;
+            PlayerMovementStateMachine.ReusableData.FireLayerWeight = 0;
+            PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.FiringLayer, 0);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.FiringParameterHash);
         }
 
     }
-}
+}*/

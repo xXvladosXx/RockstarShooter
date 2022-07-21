@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,41 +13,41 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
         private bool _keepSprinting;
         private bool _shouldResetSprintState;
 
-        public PlayerSprintingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+ 
+        public override List<IState> Enter()
         {
-        }
-
-        public override void Enter()
-        {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = GroundedData.SprintData.SpeedModifier;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = GroundedData.SprintData.SpeedModifier;
 
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.SprintParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.SprintParameterHash);
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
 
             _startTime = Time.time;
 
             _shouldResetSprintState = true;
 
-            if (!PlayerStateMachine.ReusableData.ShouldSprint)
+            if (!PlayerMovementStateMachine.ReusableData.ShouldSprint)
             {
                 _keepSprinting = false;
             }
+            
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.SprintParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.SprintParameterHash);
 
             if (_shouldResetSprintState)
             {
                 _keepSprinting = false;
 
-                PlayerStateMachine.ReusableData.ShouldSprint = false;
+                PlayerMovementStateMachine.ReusableData.ShouldSprint = false;
             }
         }
 
@@ -68,35 +70,35 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
         private void StopSprinting()
         {
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
 
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.RunningState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
         }
 
         protected override void AddInputActionsCallbacks()
         {
             base.AddInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Sprint.performed += OnSprintPerformed;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Sprint.performed += OnSprintPerformed;
         }
 
         protected override void RemoveInputActionsCallbacks()
         {
             base.RemoveInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Sprint.performed -= OnSprintPerformed;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Sprint.performed -= OnSprintPerformed;
         }
 
         private void OnSprintPerformed(InputAction.CallbackContext context)
         {
             _keepSprinting = true;
 
-            PlayerStateMachine.ReusableData.ShouldSprint = true;
+            PlayerMovementStateMachine.ReusableData.ShouldSprint = true;
         }
 
         protected override void OnDashStarted(InputAction.CallbackContext context)
@@ -105,7 +107,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.HardStoppingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
 
             base.OnMovementCanceled(context);
         }

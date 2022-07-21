@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 using UnityEngine;
 
@@ -5,34 +7,35 @@ namespace Characters.Player.StateMachines.Movement.States.Airborne
 {
     public class PlayerAirborneState : PlayerMovementState
     {
-        public PlayerAirborneState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
+     
 
-        public override void Enter()
+        public override List<IState> Enter()
         {
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.AirborneParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.AirborneParameterHash);
 
             ResetSprintState();
+            
+            return null;
+
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.AirborneParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.AirborneParameterHash);
         }
 
         protected virtual void ResetSprintState()
         {
-            PlayerStateMachine.ReusableData.ShouldSprint = false;
+            PlayerMovementStateMachine.ReusableData.ShouldSprint = false;
         }
 
         protected override void OnContactWithGround(Collider collider)
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.LightLandingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.LightLandingState);
         }
     }
 }

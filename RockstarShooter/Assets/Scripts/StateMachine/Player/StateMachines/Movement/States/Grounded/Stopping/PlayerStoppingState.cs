@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using Characters.Player.StateMachines.Movement.States.Grounded.Combat;
 using GenshinImpactMovementSystem;
 using UnityEngine;
@@ -7,35 +9,33 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
 {
     public class PlayerStoppingState : PlayerGroundedState
     {
-        public PlayerStoppingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+        public override List<IState> Enter()
         {
-        }
-
-        public override void Enter()
-        {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = 0f;
-            PlayerStateMachine.ReusableData.SmoothModifier = 0;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = 0f;
+            PlayerMovementStateMachine.ReusableData.SmoothModifier = 0;
             
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.StoppingParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.StoppingParameterHash);
+
+            return null;
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.SpeedParameterHash, 0);
+            SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.SpeedParameterHash, 0);
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.StoppingParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.StoppingParameterHash);
         }
 
         public override void Update()
         {
             base.Update();
-            PlayerStateMachine.ReusableData.SmoothModifier -= Time.deltaTime;
+            PlayerMovementStateMachine.ReusableData.SmoothModifier -= Time.deltaTime;
             
-            SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.SpeedParameterHash, PlayerStateMachine.ReusableData.SmoothModifier, 0.1f);
+            SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.SpeedParameterHash, PlayerMovementStateMachine.ReusableData.SmoothModifier, 0.1f);
         }
 
         public override void FixedUpdate()
@@ -54,21 +54,21 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
 
         public override void OnAnimationExitEvent()
         {
-            PlayerStateMachine.ChangeState(PlayerStateMachine.IdlingState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
         }
 
         protected override void AddInputActionsCallbacks()
         {
             base.AddInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.started += OnMovementStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.started += OnMovementStarted;
         }
 
         protected override void RemoveInputActionsCallbacks()
         {
             base.RemoveInputActionsCallbacks();
 
-            PlayerStateMachine.Player.Input.PlayerActions.Movement.started -= OnMovementStarted;
+            PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.started -= OnMovementStarted;
         }
 
         private void OnMovementStarted(InputAction.CallbackContext context)

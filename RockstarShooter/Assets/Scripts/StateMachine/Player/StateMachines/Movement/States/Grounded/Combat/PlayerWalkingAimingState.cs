@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using Characters.Player.StateMachines.Movement.States.Grounded.Moving;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,52 +8,52 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
 {
     public class PlayerWalkingFiringState : PlayerMovingState
     {
-        public PlayerWalkingFiringState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
+      
+        public override List<IState> Enter()
         {
-        }
-
-        public override void Enter()
-        {
-            PlayerStateMachine.ReusableData.MovementSpeedModifier = GroundedData.WalkData.SpeedModifier;
-            PlayerStateMachine.ReusableData.MaxSmoothModifier = PlayerStateMachine.Player.StateData.GroundedData.WalkData.SmoothInputSpeed;
+            PlayerMovementStateMachine.ReusableData.MovementSpeedModifier = GroundedData.WalkData.SpeedModifier;
+            PlayerMovementStateMachine.ReusableData.MaxSmoothModifier = PlayerMovementStateMachine.Player.StateData.GroundedData.WalkData.SmoothInputSpeed;
             
-            PlayerStateMachine.Player.RigWeight = 1;
+            PlayerMovementStateMachine.Player.RigWeight = 1;
 
             base.Enter();
             
-            PlayerStateMachine.ReusableData.ShouldDecreaseAimLayer = false;
+            PlayerMovementStateMachine.ReusableData.ShouldDecreaseAimLayer = false;
             
             ResetVelocity();
 
-            PlayerStateMachine.Player.Animator.SetLayerWeight(PlayerStateMachine.Player.AnimationData.AimingLayer, 1);
+            PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.AimingLayer, 1);
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.WalkParameterHash);
-            StartAnimation(PlayerStateMachine.Player.AnimationData.AimingParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.WalkParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.AimingParameterHash);
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.WeakForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.WeakForce;
+            
+            return null;
+
         }
 
         public override void Update()
         {
             base.Update();
 
-            SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.HorizontalParameterHash,
+            SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.HorizontalParameterHash,
                 GetMovementInputDirection().x, .1f);
             
-            SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.VerticalParameterHash,
+            SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.VerticalParameterHash,
                 GetMovementInputDirection().z, .1f);
             
-            SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.SpeedParameterHash, 
-                PlayerStateMachine.ReusableData.SmoothModifier, 0.1f);
+            SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.SpeedParameterHash, 
+                PlayerMovementStateMachine.ReusableData.SmoothModifier, 0.1f);
 
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
                 LockToAim();
 
-                PlayerStateMachine.ReusableData.SmoothModifier -= Time.deltaTime;
+                PlayerMovementStateMachine.ReusableData.SmoothModifier -= Time.deltaTime;
             
-                SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.SpeedParameterHash, 
-                    PlayerStateMachine.ReusableData.SmoothModifier, 0.1f);
+                SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.SpeedParameterHash, 
+                    PlayerMovementStateMachine.ReusableData.SmoothModifier, 0.1f);
             }
         }
 
@@ -65,19 +67,19 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
         {
             base.Exit();
 
-            PlayerStateMachine.Player.RigWeight = 0;
+            PlayerMovementStateMachine.Player.RigWeight = 0;
             
-            PlayerStateMachine.ReusableData.ShouldDecreaseAimLayer = true;
-            PlayerStateMachine.ReusableData.AimLayerWeight = 1;
+            PlayerMovementStateMachine.ReusableData.ShouldDecreaseAimLayer = true;
+            PlayerMovementStateMachine.ReusableData.AimLayerWeight = 1;
             
-            StopAnimation(PlayerStateMachine.Player.AnimationData.AimingParameterHash);
-            StopAnimation(PlayerStateMachine.Player.AnimationData.WalkParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.AimingParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.WalkParameterHash);
 
-            if (PlayerStateMachine.ReusableData.MovementInput == Vector2.zero)
+            if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerStateMachine.ReusableData.SmoothModifier = 0;
-                SetSpeedAnimation(PlayerStateMachine.Player.AnimationData.SpeedParameterHash, 
-                    PlayerStateMachine.ReusableData.SmoothModifier);
+                PlayerMovementStateMachine.ReusableData.SmoothModifier = 0;
+                SetSpeedAnimation(PlayerMovementStateMachine.Player.AnimationData.SpeedParameterHash, 
+                    PlayerMovementStateMachine.ReusableData.SmoothModifier);
             }
         }
 
@@ -89,7 +91,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Combat
         protected override void OnDashStarted(InputAction.CallbackContext context)
         {
             base.OnDashStarted(context);
-            PlayerStateMachine.ReusableData.AimLayerWeight = 0;
+            PlayerMovementStateMachine.ReusableData.AimLayerWeight = 0;
         }
 
         protected override void OnMovementCanceled(InputAction.CallbackContext context)

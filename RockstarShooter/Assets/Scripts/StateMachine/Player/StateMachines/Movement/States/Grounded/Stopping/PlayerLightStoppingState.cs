@@ -1,20 +1,21 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 
 namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
 {
     public class PlayerLightStoppingState : PlayerStoppingState
     {
-        public PlayerLightStoppingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
-
-        public override void Enter()
+      
+        public override List<IState> Enter()
         {
             base.Enter();
 
-            PlayerStateMachine.ReusableData.MovementDecelerationForce = GroundedData.StopData.LightDecelerationForce;
+            PlayerMovementStateMachine.ReusableData.MovementDecelerationForce = GroundedData.StopData.LightDecelerationForce;
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.WeakForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.WeakForce;
+            return null;
+
         }
     }
 }

@@ -1,39 +1,39 @@
+using System.Collections.Generic;
+using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
 
 namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
 {
     public class PlayerHardStoppingState : PlayerStoppingState
     {
-        public PlayerHardStoppingState(PlayerStateMachine playerPlayerStateMachine) : base(playerPlayerStateMachine)
-        {
-        }
-
-        public override void Enter()
+        public override List<IState> Enter()
         {
             base.Enter();
 
-            StartAnimation(PlayerStateMachine.Player.AnimationData.HardStopParameterHash);
+            StartAnimation(PlayerMovementStateMachine.Player.AnimationData.HardStopParameterHash);
 
-            PlayerStateMachine.ReusableData.MovementDecelerationForce = GroundedData.StopData.HardDecelerationForce;
+            PlayerMovementStateMachine.ReusableData.MovementDecelerationForce = GroundedData.StopData.HardDecelerationForce;
 
-            PlayerStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
+            PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
+
+            return null;
         }
 
         public override void Exit()
         {
             base.Exit();
 
-            StopAnimation(PlayerStateMachine.Player.AnimationData.HardStopParameterHash);
+            StopAnimation(PlayerMovementStateMachine.Player.AnimationData.HardStopParameterHash);
         }
 
         protected override void OnMove()
         {
-            if (PlayerStateMachine.ReusableData.ShouldWalk)
+            if (PlayerMovementStateMachine.ReusableData.ShouldWalk)
             {
                 return;
             }
 
-            PlayerStateMachine.ChangeState(PlayerStateMachine.RunningState);
+            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
         }
     }
 }
