@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
+using StateMachine.Player.StateMachines.Combat.Rifle.Firing;
 using UnityEngine;
 
 namespace Characters.Player.StateMachines.Movement.States.Grounded
@@ -19,11 +20,6 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
 
             ResetVelocity();
             
-            if (PlayerMovementStateMachine.ReusableData.ShouldFire)
-            {
-                //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerFiringState);
-            }
-
             return null;
         }
 
@@ -40,7 +36,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
             
             if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                return;
+                 return;
             }
 
             OnMove();

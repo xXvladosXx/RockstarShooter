@@ -4825,7 +4825,8 @@ GameObject:
   - component: {fileID: 1680079104610432891}
   - component: {fileID: 2377633001402235102}
   - component: {fileID: 512279887713897492}
-  - component: {fileID: 3936802071762371098}
+  - component: {fileID: 7662287544943540559}
+  - component: {fileID: 3379348862220486331}
   m_Layer: 0
   m_Name: assault4
   m_TagString: Untagged
@@ -4899,7 +4900,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3936802071762371098
+--- !u!114 &7662287544943540559
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4908,15 +4909,71 @@ MonoBehaviour:
   m_GameObject: {fileID: 2025220874670190017}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d7deb9903674d40bed51914ac6ee153, type: 3}
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <PointToSpawnEmission>k__BackingField: {fileID: 1860926408834870343}
-  <Emissions>k__BackingField:
-  - {fileID: 9110012492313618251}
-  - {fileID: 89063958588048446}
-  <WeaponItem>k__BackingField: {fileID: 11400000, guid: 21d417bab5ed7c142abf3ca66e89fa4e,
-    type: 2}
+  m_ImpulseDefinition:
+    m_ImpulseChannel: 1
+    m_ImpulseShape: 2
+    m_CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_ImpulseDuration: 0.2
+    m_ImpulseType: 3
+    m_DissipationRate: 0.25
+    m_RawSignal: {fileID: 11400000, guid: 89bec61be2d08904183df0500549efe6, type: 2}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 0.2
+    m_RepeatMode: 0
+    m_Randomize: 1
+    m_TimeEnvelope:
+      m_AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_AttackTime: 0
+      m_SustainTime: 0.2
+      m_DecayTime: 0.7
+      m_ScaleWithImpact: 1
+      m_HoldForever: 0
+    m_ImpactRadius: 100
+    m_DirectionMode: 0
+    m_DissipationMode: 2
+    m_DissipationDistance: 100
+    m_PropagationSpeed: 343
+  m_DefaultVelocity: {x: 0, y: -1, z: 0}
+--- !u!114 &3379348862220486331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025220874670190017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff29c3e440714436b29fc915270cd45c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _recoilPattern:
+  - {x: 0.3, y: -1}
+  - {x: 0.5, y: -1}
+  - {x: -0.2, y: -1}
+  - {x: -0.6, y: -1}
+  - {x: 0.4, y: -1}
+  - {x: 0.1, y: -1}
+  - {x: -0.7, y: -1}
+  _duration: 0.1
 --- !u!1 &2235243527957566237
 GameObject:
   m_ObjectHideFlags: 0
@@ -72716,17 +72773,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: FlashHeadon
       objectReference: {fileID: 0}
+    - target: {fileID: 3462776099795693185, guid: 2a8e379048cccb74b8619715b8911e04,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a8e379048cccb74b8619715b8911e04, type: 3}
 --- !u!4 &8980893753673679119 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3460980333251479901, guid: 2a8e379048cccb74b8619715b8911e04,
-    type: 3}
-  m_PrefabInstance: {fileID: 5522912945386801234}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &9110012492313618251 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 3659192391104376601, guid: 2a8e379048cccb74b8619715b8911e04,
     type: 3}
   m_PrefabInstance: {fileID: 5522912945386801234}
   m_PrefabAsset: {fileID: 0}

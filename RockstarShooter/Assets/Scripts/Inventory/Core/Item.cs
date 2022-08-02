@@ -23,6 +23,6 @@ namespace Inventory.Core
         Grenade = 1 << 4,
         Aid = 1 << 5,
         SteelArms = Weapon | 1 << 6,
-        
+        Sword = SteelArms | 1<< 7
     }
 }

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using AnimatorStateMachine.StateMachine;
+using Bonuses;
+using Bonuses.CoreBonuses;
 using GenshinImpactMovementSystem;
+using StateMachine.Player.StateMachines.Combat.Rifle.Firing;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,7 +13,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
     {
         private float _startTime;
 
-
+        private IBonus _accuracyDebuff = new AccuracyBonus(-75);
 
         public override List<IState> Enter()
         {
@@ -18,19 +21,23 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
             base.Enter();
 
+            AddMovementDebuff(_accuracyDebuff);
+            
             StartAnimation(PlayerMovementStateMachine.Player.AnimationData.RunParameterHash);
             PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.MediumForce;
 
             _startTime = Time.time;
             
             PlayerMovementStateMachine.ReusableData.MaxSmoothModifier = GroundedData.RunData.SmoothInputSpeed;
-            return null;
 
+            return null;
         }
 
         public override void Exit()
         {
             base.Exit();
+            
+            RemoveMovementDebuff(_accuracyDebuff);
             
             StopAnimation(PlayerMovementStateMachine.Player.AnimationData.RunParameterHash);
         }
@@ -56,12 +63,12 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
         {
             if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
+                PlayerStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
 
                 return;
             }
 
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.WalkingFiringState);
+            PlayerStateMachine.ChangeState(PlayerMovementStateMachine.WalkingState);
         }
 
         protected override void OnWalkToggleStarted(InputAction.CallbackContext context)
@@ -71,7 +78,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.MediumStoppingState);
+            PlayerStateMachine.ChangeState(PlayerMovementStateMachine.MediumStoppingState);
 
             base.OnMovementCanceled(context);
         }

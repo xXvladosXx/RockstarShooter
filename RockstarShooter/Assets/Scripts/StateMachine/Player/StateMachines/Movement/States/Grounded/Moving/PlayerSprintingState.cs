@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
+using StateMachine.Player.StateMachines.Combat.Rifle.Firing;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,9 +33,8 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
             {
                 _keepSprinting = false;
             }
-            
-            return null;
 
+            return null;
         }
 
         public override void Exit()
@@ -64,7 +64,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
             {
                 return;
             }
-
+            
             StopSprinting();
         }
 
@@ -72,33 +72,33 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
         {
             if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
+                PlayerStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
 
                 return;
             }
 
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
+            PlayerStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
         }
 
         protected override void AddInputActionsCallbacks()
         {
             base.AddInputActionsCallbacks();
 
-            PlayerMovementStateMachine.Player.Input.PlayerActions.Sprint.performed += OnSprintPerformed;
+            PlayerStateMachine.Player.Input.PlayerActions.Sprint.performed += OnSprintPerformed;
         }
 
         protected override void RemoveInputActionsCallbacks()
         {
             base.RemoveInputActionsCallbacks();
 
-            PlayerMovementStateMachine.Player.Input.PlayerActions.Sprint.performed -= OnSprintPerformed;
+            PlayerStateMachine.Player.Input.PlayerActions.Sprint.performed -= OnSprintPerformed;
         }
 
         private void OnSprintPerformed(InputAction.CallbackContext context)
         {
             _keepSprinting = true;
 
-            PlayerMovementStateMachine.ReusableData.ShouldSprint = true;
+            PlayerStateMachine.ReusableData.ShouldSprint = true;
         }
 
         protected override void OnDashStarted(InputAction.CallbackContext context)
@@ -107,8 +107,7 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Moving
 
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
-
+            PlayerStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
             base.OnMovementCanceled(context);
         }
 

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using AnimatorStateMachine.StateMachine;
+using Bonuses;
 using Characters.Player.Data.States.Airborne;
 using Characters.Player.Data.States.Grounded;
 using GenshinImpactMovementSystem;
+using StateMachine.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utilities;
@@ -12,7 +14,8 @@ namespace Characters.Player.StateMachines.Movement.States
     public class PlayerMovementState : IMovementState
     {
         protected PlayerMovementStateMachine PlayerMovementStateMachine { get; private set; }
-
+        protected PlayerStateMachine PlayerStateMachine { get; private set; }
+        
         protected PlayerGroundedData GroundedData { get; private set; }
         protected AliveEntityAirborneData AirborneData { get; private set; }
         
@@ -26,9 +29,9 @@ namespace Characters.Player.StateMachines.Movement.States
             InitializeData();
         }
 
-        public PlayerMovementState()
+        public void SetPlayerStateMachine(PlayerStateMachine playerStateMachine)
         {
-            
+            PlayerStateMachine = playerStateMachine;
         }
 
         public virtual List<IState> Enter()
@@ -50,26 +53,12 @@ namespace Characters.Player.StateMachines.Movement.States
 
         public virtual void Update()
         {
-            if (PlayerMovementStateMachine.ReusableData.ShouldDecreaseFireLayer)
-            {
-                PlayerMovementStateMachine.ReusableData.FireLayerWeight -= Time.deltaTime;
-                PlayerMovementStateMachine.ReusableData.FireLayerWeight = Mathf.Clamp(PlayerMovementStateMachine.ReusableData.FireLayerWeight, 0f, 1f);
-                PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.FiringLayer, PlayerMovementStateMachine.ReusableData.FireLayerWeight);
-            }
-            
-            if (PlayerMovementStateMachine.ReusableData.ShouldDecreaseAimLayer)
-            {
-                PlayerMovementStateMachine.ReusableData.AimLayerWeight -= Time.deltaTime*3;
-                PlayerMovementStateMachine.ReusableData.AimLayerWeight = Mathf.Clamp(PlayerMovementStateMachine.ReusableData.AimLayerWeight, 0f, 1f);
-                PlayerMovementStateMachine.Player.Animator.SetLayerWeight(PlayerMovementStateMachine.Player.AnimationData.AimingLayer, PlayerMovementStateMachine.ReusableData.AimLayerWeight);
-            }
-            
             PlayerMovementStateMachine.ReusableData.SmoothModifier = Mathf.Clamp(PlayerMovementStateMachine.ReusableData.SmoothModifier,
                 0,PlayerMovementStateMachine.ReusableData.MaxSmoothModifier);
             
             PlayerMovementStateMachine.ReusableData.MouseWorldPosition = Vector3.zero;
 
-            RaycastHit? raycastHit = PlayerMovementStateMachine.Player.GetRaycastHitFromMainCamera();
+            RaycastHit? raycastHit = PlayerMovementStateMachine.Player.GetRaycastHit();
 
             PlayerMovementStateMachine.Player.Aim.transform.position = (Vector3) raycastHit?.point;
                 PlayerMovementStateMachine.ReusableData.MouseWorldPosition = (Vector3) raycastHit?.point;
@@ -152,11 +141,7 @@ namespace Characters.Player.StateMachines.Movement.States
 
             PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.performed += OnMovementPerformed;
             PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.canceled += OnMovementCanceled;
-            
-          
         }
-
-        
 
         protected virtual void RemoveInputActionsCallbacks()
         {
@@ -169,12 +154,6 @@ namespace Characters.Player.StateMachines.Movement.States
             
            
         }
-
-        protected virtual void OnFireCanceled(InputAction.CallbackContext obj)
-        {
-            Debug.Log("canceld");
-        }
-
 
         protected virtual void OnWalkToggleStarted(InputAction.CallbackContext context)
         {
@@ -193,17 +172,6 @@ namespace Characters.Player.StateMachines.Movement.States
         {
         }
         
-        protected virtual void OnAimPerformed(InputAction.CallbackContext obj)
-        {
-            PlayerMovementStateMachine.Player.PlayerCameraSwitcher.SwitchToAimCamera();
-
-            //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerAimingState);
-        }
-        
-        protected virtual void OnFirePerformed(InputAction.CallbackContext obj)
-        {
-            //PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.PlayerFiringState);
-        }
         private void ReadMovementInput()
         {
             PlayerMovementStateMachine.ReusableData.MovementInput = PlayerMovementStateMachine.Player.Input.PlayerActions.Movement.ReadValue<Vector2>();
@@ -423,6 +391,16 @@ namespace Characters.Player.StateMachines.Movement.States
             PlayerMovementStateMachine.Player.Rigidbody.AddForce(-playerVerticalVelocity * PlayerMovementStateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
         }
 
+        protected void RemoveMovementDebuff(IBonus bonus)
+        {
+            PlayerStateMachine.Player.BonusesController.RemoveBonus(bonus);
+        }
+
+        protected void AddMovementDebuff(IBonus bonus)
+        {
+            PlayerStateMachine.Player.BonusesController.AddBonus(bonus);
+        }
+        
         protected bool IsMovingHorizontally(float minimumMagnitude = 0.1f)
         {
             Vector3 playerHorizontaVelocity = GetPlayerHorizontalVelocity();

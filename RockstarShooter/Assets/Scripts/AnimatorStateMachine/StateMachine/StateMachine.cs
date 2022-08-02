@@ -7,55 +7,56 @@ namespace StateMachine
 {
     public abstract class StateMachine<T> where T : IState
     {
-        private T _currentState;
+        protected T CurrentState;
+        public T GetState() => CurrentState;
 
         public virtual List<IState> ChangeState(T newState)
         {
-            _currentState?.Exit();
+            CurrentState?.Exit();
 
-            _currentState = newState;
+            CurrentState = newState;
 
-            return _currentState.Enter();
+            return CurrentState.Enter();
         }
 
         public virtual void HandleInput()
         {
-            _currentState?.HandleInput();
+            CurrentState?.HandleInput();
         }
 
         public virtual void Update()
         {
-            _currentState?.Update();
+            CurrentState?.Update();
         }
 
         public virtual void PhysicsUpdate()
         {
-            _currentState?.FixedUpdate();
+            CurrentState?.FixedUpdate();
         }
 
         public virtual void OnTriggerEnter(Collider collider)
         {
-            _currentState?.OnTriggerEnter(collider);
+            CurrentState?.OnTriggerEnter(collider);
         }
 
         public virtual void OnTriggerExit(Collider collider)
         {
-            _currentState?.OnTriggerExit(collider);
+            CurrentState?.OnTriggerExit(collider);
         }
 
         public virtual void OnAnimationEnterEvent()
         {
-            _currentState?.OnAnimationEnterEvent();
+            CurrentState?.OnAnimationEnterEvent();
         }
 
         public virtual void OnAnimationExitEvent()
         {
-            _currentState?.OnAnimationExitEvent();
+            CurrentState?.OnAnimationExitEvent();
         }
 
         public virtual void OnAnimationTransitionEvent()
         {
-            _currentState?.OnAnimationTransitionEvent();
+            CurrentState?.OnAnimationTransitionEvent();
         }
     }
 }

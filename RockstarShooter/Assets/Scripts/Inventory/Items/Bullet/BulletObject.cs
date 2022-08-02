@@ -24,7 +24,6 @@ namespace Inventory.Items.Bullet
             {
                 hit.gameObject.SetActive(true);
                 hit.Emit(1);
-                print("Damaged");
             }
             
             Destroy(gameObject,.5f);

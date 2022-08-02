@@ -10,22 +10,38 @@ namespace Characters.Player.Utilities.Colliders
         [field: SerializeField] public CinemachineVirtualCamera AimCamera { get; private set; }
         [field: SerializeField] public CinemachineVirtualCamera DefaultCamera { get; private set; }
 
+        public CinemachinePOV CinemachinePovAim { get; private set; }
+        public CinemachinePOV CinemachinePovDefault { get; private set; }
+        public CinemachinePOV CurrentCinemachinePov { get; private set; }
+        
+        public void InitPovCameras()
+        {
+            CinemachinePovAim = AimCamera.GetCinemachineComponent<CinemachinePOV>();
+            CinemachinePovDefault = DefaultCamera.GetCinemachineComponent<CinemachinePOV>();
+
+            CurrentCinemachinePov = CinemachinePovDefault;
+        }
+        
         public void SwitchToAimCamera()
         {
-            AimCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis =
-                DefaultCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis;
-            AimCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis =
-                DefaultCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis;
+            CinemachinePovAim.m_VerticalAxis =
+                CinemachinePovDefault.m_VerticalAxis;
+            CinemachinePovAim.m_HorizontalAxis =
+                CinemachinePovDefault.m_HorizontalAxis;
             AimCamera.gameObject.SetActive(true);
+            
+            CurrentCinemachinePov = CinemachinePovAim;
         }
         
         public void SwitchToDefaultCamera()
         {
-            DefaultCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis =
-                AimCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis;
-            DefaultCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis =
-                AimCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis;
+            CinemachinePovDefault.m_VerticalAxis =
+                CinemachinePovAim.m_VerticalAxis;
+            CinemachinePovDefault.m_HorizontalAxis =
+                CinemachinePovAim.m_HorizontalAxis;
             AimCamera.gameObject.SetActive(false);
+            
+            CurrentCinemachinePov = CinemachinePovDefault;
         }
     }
 }

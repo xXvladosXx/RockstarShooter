@@ -116,6 +116,42 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""7d5eea90-8b92-4a19-81ae-205acef6846a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeWeaponRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""77ce17e4-c5e8-4d8a-a54a-ec8f713d159d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeWeaponLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""b213ceb9-505a-456a-9d2b-d30dd93040b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""EquipWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""ad00b54a-27d6-411c-b7e5-3eec4dd7776d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -272,6 +308,50 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a86653d9-68b1-416a-afb2-eecff684de12"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""985b7e2f-1c11-4ccd-83a1-2dd726eecda3"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeWeaponRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""605a5502-e7a3-4131-ba5b-2d272b95e4fd"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeWeaponLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4cf66a3f-ad43-4e5a-98d5-b3bb935e37b9"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EquipWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -290,6 +370,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_CursorToggle = m_Player.FindAction("CursorToggle", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        m_Player_ChangeWeaponRight = m_Player.FindAction("ChangeWeaponRight", throwIfNotFound: true);
+        m_Player_ChangeWeaponLeft = m_Player.FindAction("ChangeWeaponLeft", throwIfNotFound: true);
+        m_Player_EquipWeapon = m_Player.FindAction("EquipWeapon", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -359,6 +443,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_CursorToggle;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_ChangeWeaponRight;
+    private readonly InputAction m_Player_ChangeWeaponLeft;
+    private readonly InputAction m_Player_EquipWeapon;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -373,6 +461,10 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @CursorToggle => m_Wrapper.m_Player_CursorToggle;
         public InputAction @Aim => m_Wrapper.m_Player_Aim;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        public InputAction @ChangeWeaponRight => m_Wrapper.m_Player_ChangeWeaponRight;
+        public InputAction @ChangeWeaponLeft => m_Wrapper.m_Player_ChangeWeaponLeft;
+        public InputAction @EquipWeapon => m_Wrapper.m_Player_EquipWeapon;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -412,6 +504,18 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Fire.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
                 @Fire.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
                 @Fire.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
+                @Reload.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @Reload.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @Reload.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnReload;
+                @ChangeWeaponRight.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeWeaponRight;
+                @ChangeWeaponRight.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeWeaponRight;
+                @ChangeWeaponRight.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeWeaponRight;
+                @ChangeWeaponLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeWeaponLeft;
+                @ChangeWeaponLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeWeaponLeft;
+                @ChangeWeaponLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeWeaponLeft;
+                @EquipWeapon.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon;
+                @EquipWeapon.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon;
+                @EquipWeapon.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEquipWeapon;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -446,6 +550,18 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Fire.started += instance.OnFire;
                 @Fire.performed += instance.OnFire;
                 @Fire.canceled += instance.OnFire;
+                @Reload.started += instance.OnReload;
+                @Reload.performed += instance.OnReload;
+                @Reload.canceled += instance.OnReload;
+                @ChangeWeaponRight.started += instance.OnChangeWeaponRight;
+                @ChangeWeaponRight.performed += instance.OnChangeWeaponRight;
+                @ChangeWeaponRight.canceled += instance.OnChangeWeaponRight;
+                @ChangeWeaponLeft.started += instance.OnChangeWeaponLeft;
+                @ChangeWeaponLeft.performed += instance.OnChangeWeaponLeft;
+                @ChangeWeaponLeft.canceled += instance.OnChangeWeaponLeft;
+                @EquipWeapon.started += instance.OnEquipWeapon;
+                @EquipWeapon.performed += instance.OnEquipWeapon;
+                @EquipWeapon.canceled += instance.OnEquipWeapon;
             }
         }
     }
@@ -462,5 +578,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnCursorToggle(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
+        void OnReload(InputAction.CallbackContext context);
+        void OnChangeWeaponRight(InputAction.CallbackContext context);
+        void OnChangeWeaponLeft(InputAction.CallbackContext context);
+        void OnEquipWeapon(InputAction.CallbackContext context);
     }
 }

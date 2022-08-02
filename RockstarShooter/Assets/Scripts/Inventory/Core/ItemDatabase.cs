@@ -28,7 +28,7 @@ namespace Inventory.Core
 
         public void OnAfterDeserialize()
         {
-            UpdateID();
+//            UpdateID();
         }
         
         private void UpdateID()

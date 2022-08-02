@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using AnimatorStateMachine.StateMachine;
 using Characters.Player.StateMachines.Movement.States.Grounded.Combat;
+using StateMachine.Player.StateMachines.Combat;
+using StateMachine.Player.StateMachines.Combat.Rifle;
+using StateMachine.Player.StateMachines.Combat.Rifle.Firing;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,10 +25,16 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
             PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
 
             PlayerMovementStateMachine.ReusableData.RotationData = GroundedData.DashData.RotationData;
-
+            
+            PlayerMovementStateMachine.ReusableData.SmoothModifier =
+                PlayerMovementStateMachine.ReusableData.MaxSmoothModifier;
+            
             _shouldKeepRotating = PlayerMovementStateMachine.ReusableData.MovementInput != Vector2.zero;
 
-            return null;
+            return new List<IState>()
+            {
+                new PlayerBaseDashState()
+            };
         }
 
         public override void Exit()
@@ -59,12 +68,12 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded
         {
             if (PlayerMovementStateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
+                PlayerStateMachine.ChangeState(PlayerMovementStateMachine.HardStoppingState);
 
                 return;
             }
 
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.SprintingState);
+            PlayerStateMachine.ChangeState(PlayerMovementStateMachine.SprintingState);
         }
 
         protected override void AddInputActionsCallbacks()

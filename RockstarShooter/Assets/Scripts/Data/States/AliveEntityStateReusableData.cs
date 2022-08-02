@@ -13,15 +13,10 @@ namespace Characters.Player.Data.States
         public float MovementDecelerationForce { get; set; } = 1f;
         public bool ShouldWalk { get; set; }
         public bool ShouldSprint { get; set; }
-        public bool ShouldFire { get; set; }
-
-        public bool ShouldDecreaseFireLayer { get; set; }
-        public bool ShouldDecreaseAimLayer { get; set; }
 
         public Vector3 MouseWorldPosition { get; set; }
         public float SmoothModifier { get; set; }
         public float MaxSmoothModifier { get; set; }
-        public float AimModifier { get; set; }
 
         private Vector3 _currentTargetRotation;
         private Vector3 _timeToReachTargetRotation;
@@ -34,9 +29,6 @@ namespace Characters.Player.Data.States
         public ref Vector3 DampedTargetRotationPassedTime => ref _dampedTargetRotationPassedTime;
 
         public Vector3 CurrentJumpForce { get; set; }
-
-        public float FireLayerWeight { get; set; }
-        public float AimLayerWeight { get; set; }
 
         public AliveEntityRotationData RotationData { get; set; }
     }

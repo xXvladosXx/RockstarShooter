@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AnimatorStateMachine.StateMachine;
 using GenshinImpactMovementSystem;
+using UnityEngine;
 
 namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
 {
@@ -15,25 +16,26 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
             PlayerMovementStateMachine.ReusableData.MovementDecelerationForce = GroundedData.StopData.HardDecelerationForce;
 
             PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.StrongForce;
-
+            
             return null;
         }
 
         public override void Exit()
         {
             base.Exit();
-
+            
             StopAnimation(PlayerMovementStateMachine.Player.AnimationData.HardStopParameterHash);
         }
 
         protected override void OnMove()
         {
+            return;
             if (PlayerMovementStateMachine.ReusableData.ShouldWalk)
             {
                 return;
             }
 
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
+            PlayerStateMachine.ChangeState(PlayerMovementStateMachine.RunningState);
         }
     }
 }

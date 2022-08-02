@@ -17,7 +17,6 @@ namespace Characters.Player.StateMachines.Movement.States.Grounded.Stopping
 
             PlayerMovementStateMachine.ReusableData.CurrentJumpForce = AirborneData.JumpData.MediumForce;
             return null;
-
         }
 
         public override void Exit()

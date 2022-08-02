@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3d132bb4a84060a1e588e4ebb62644, type: 3}
+  m_Name: Sword
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Rifle
+  <Description>k__BackingField: 
+  <MaxInStack>k__BackingField: 1
+  <ItemData>k__BackingField:
+    <ID>k__BackingField: 0
+  <Sprite>k__BackingField: {fileID: 21300000, guid: af0ae2dbf3d1efb4f82af377950704a2,
+    type: 3}
+  <ItemType>k__BackingField: 193
+  <BulletObject>k__BackingField: {fileID: -4636514689707495570, guid: 67fa0717384cdbe45896f3518a3dcb2d,
+    type: 3}
+  <WeaponObject>k__BackingField: {fileID: 3936802071762371098, guid: fb1646f13a1215647b2d512c768dfcb2,
+    type: 3}
+  <HitParticles>k__BackingField: []
+  <MinSpread>k__BackingField: 0.01
+  <MaxSpread>k__BackingField: 1
+  <SpreadPerFire>k__BackingField: 0.01
+  <MaxAccuracyDebuff>k__BackingField: 15
+  <SpreadReduceModifier>k__BackingField: 0.2
+  <TimeBetweenShooting>k__BackingField: 2
+  <ReloadTime>k__BackingField: 2
+  <MagazineSize>k__BackingField: 20
+  <BulletsPerTap>k__BackingField: 1
+  <AllowButtonHold>k__BackingField: 1
+  <AnimatorController>k__BackingField: {fileID: 9100000, guid: cdafdcc13875b264f91457ee8dfee6db,
+    type: 2}

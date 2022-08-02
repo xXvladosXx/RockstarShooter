@@ -8,6 +8,8 @@ using Characters.Player.StateMachines.Movement.States.Grounded.Landing;
 using Characters.Player.StateMachines.Movement.States.Grounded.Moving;
 using Characters.Player.StateMachines.Movement.States.Grounded.Stopping;
 using GenshinImpactMovementSystem;
+using StateMachine.Player.StateMachines.Movement.States.Grounded.Moving;
+using UnityEngine;
 
 namespace Characters.Player.StateMachines.Movement
 {
@@ -19,9 +21,10 @@ namespace Characters.Player.StateMachines.Movement
         public PlayerIdlingState IdlingState { get; }
         public PlayerDashingState DashingState { get; }
 
-        public PlayerWalkingFiringState WalkingFiringState { get; }
+        public PlayerWalkingState WalkingState { get; }
         public PlayerRunningState RunningState { get; }
         public PlayerSprintingState SprintingState { get; }
+        public PlayerUnmovableState PlayerUnmovableState { get; }
 
         public PlayerLightStoppingState LightStoppingState { get; }
         public PlayerMediumStoppingState MediumStoppingState { get; }
@@ -33,10 +36,9 @@ namespace Characters.Player.StateMachines.Movement
 
         public PlayerJumpingState JumpingState { get; }
         public PlayerFallingState FallingState { get; }
-        
-        //public PlayerFiringState PlayerFiringState { get; }
-        //public PlayerAimingFiringState PlayerAimingFiringState { get; }
-        //public PlayerAimingState PlayerAimingState { get;  }
+
+        public List<IMovementState> MovementStates { get; } = new();
+
 
         public PlayerMovementStateMachine(StateMachine.Player.Player player)
         {
@@ -46,7 +48,7 @@ namespace Characters.Player.StateMachines.Movement
             IdlingState = new PlayerIdlingState();
             DashingState = new PlayerDashingState();
 
-            WalkingFiringState = new PlayerWalkingFiringState();
+            WalkingState = new PlayerWalkingState();
             RunningState = new PlayerRunningState();
             SprintingState = new PlayerSprintingState();
 
@@ -61,9 +63,27 @@ namespace Characters.Player.StateMachines.Movement
             JumpingState = new PlayerJumpingState();
             FallingState = new PlayerFallingState();
 
-            //PlayerFiringState = new PlayerFiringState(this);
-            //PlayerAimingState = new PlayerAimingState(this);
-            //PlayerAimingFiringState = new PlayerAimingFiringState(this);
+            PlayerUnmovableState = new PlayerUnmovableState();
+            
+            MovementStates.Add(IdlingState);
+            MovementStates.Add(DashingState);
+            MovementStates.Add(WalkingState);
+            MovementStates.Add(RunningState);
+            MovementStates.Add(SprintingState);
+            MovementStates.Add(LightStoppingState);
+            MovementStates.Add(MediumStoppingState);
+            MovementStates.Add(HardStoppingState);
+            MovementStates.Add(LightLandingState);
+            MovementStates.Add(HardLandingState);
+            MovementStates.Add(RollingState);
+            MovementStates.Add(JumpingState);
+            MovementStates.Add(FallingState);
+        }
+
+        public override void Update()
+        {
+            Debug.Log(CurrentState);
+            base.Update();
         }
 
         public override List<IState> ChangeState(IMovementState newState)

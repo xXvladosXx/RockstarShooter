@@ -27,10 +27,28 @@ namespace Characters.Player.Utilities.Animations
             _player.OnAnimationTransitionEvent();
         }
 
-        public void Fire()
+        public void OnMagazineLoaded()
         {
-            _player.FireFromCurrentWeapon();
+            _player.MagazineLoaded();
         }
-        
+        public void OnWeaponReloaded()
+        {
+            _player.MagazineReloaded();
+        }
+
+        public void OnMagazineDrop()
+        {
+            _player.OnMagazineDrop();
+        }
+
+        public void OnTake()
+        {
+            _player.OnMagazineTake();
+        }
+
+        public void OnWeaponChange()
+        {
+            _player.ChangeWeapon();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Inventory.Items;
+using UnityEngine;
 
 namespace Inventory.Core
 {
@@ -6,5 +7,6 @@ namespace Inventory.Core
     public sealed class PickableItem : MonoBehaviour
     {
         [field: SerializeField] public Item Item { get; private set; }
+        [field: SerializeField] public ItemObject ItemObject { get; private set; }
     }
 }

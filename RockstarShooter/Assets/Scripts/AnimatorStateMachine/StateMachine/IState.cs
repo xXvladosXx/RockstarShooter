@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using StateMachine.Player;
 using UnityEngine;
 
 namespace AnimatorStateMachine.StateMachine
 {
     public interface IState
     {
+        public void SetPlayerStateMachine(PlayerStateMachine playerStateMachine);
         public List<IState> Enter();
         public void Exit();
         public void HandleInput();

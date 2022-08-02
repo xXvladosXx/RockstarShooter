@@ -24,9 +24,17 @@ MonoBehaviour:
     type: 3}
   <WeaponObject>k__BackingField: {fileID: 9109852575372773423, guid: cc3b80f6e64be16488ae0e785dfebdc8,
     type: 3}
-  <TimeToReduceSpread>k__BackingField: 1
-  <MinSpread>k__BackingField: 0.001
-  <MaxSpread>k__BackingField: 0.1
-  <SpreadPerFire>k__BackingField: 0.01
-  <ShootForce>k__BackingField: 70
-  <SpreadReduceModifier>k__BackingField: 0.2
+  <HitParticles>k__BackingField:
+  - {fileID: 5944953240987284896, guid: b6844a23fb76bad48b50ceead632b907, type: 3}
+  <MinSpread>k__BackingField: 0
+  <MaxSpread>k__BackingField: 5
+  <SpreadPerFire>k__BackingField: 3
+  <MaxAccuracyDebuff>k__BackingField: 15
+  <SpreadReduceModifier>k__BackingField: 8
+  <TimeBetweenShooting>k__BackingField: 0.1
+  <ReloadTime>k__BackingField: 2.9
+  <MagazineSize>k__BackingField: 25
+  <BulletsPerTap>k__BackingField: 1
+  <AllowButtonHold>k__BackingField: 1
+  <AnimatorController>k__BackingField: {fileID: 9100000, guid: 5f6f8ff7d39df1a49ad796a969aabf41,
+    type: 2}

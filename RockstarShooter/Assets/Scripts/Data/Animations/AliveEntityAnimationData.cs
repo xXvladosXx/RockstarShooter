@@ -14,6 +14,8 @@ namespace Characters.Player.Data.Animations
         [field: SerializeField]
         public int AimingLayer { get; private set; } = 1;
         public int FiringLayer { get; private set; } = 2;
+        public int ReloadLayer { get; private set; } = 3;
+        public int EquippingLayer { get; private set; } = 4;
 
         
         [Header("State Group Parameter Names")]
@@ -37,6 +39,9 @@ namespace Characters.Player.Data.Animations
         [Header("Combat Parameter Names")]
         [SerializeField] private string _aimingParameterName = "isAiming";
         [SerializeField] private string _firingParameterName = "isFiring";
+        [SerializeField] private string _equippingParameterName = "isEquipping";
+        [SerializeField] private string _reloadingParameterName = "isReloading";
+        [SerializeField] private string _comboParameterName = "Combo";
 
         [SerializeField] private string _speedParameterName = "Speed";
 
@@ -66,8 +71,11 @@ namespace Characters.Player.Data.Animations
         public int SpeedParameterHash { get; private set; }
         public int AimingParameterHash { get; private set; }
         public int FiringParameterHash { get; private set; }
+        public int ComboParameterHash { get; private set; }
+        public int ReloadParameterHash { get; private set; }
+        public int EquippingParameterHash { get; private set; }
 
-        public void Initialize()
+        public void Init()
         {
             GroundedParameterHash = Animator.StringToHash(_groundedParameterName);
             MovingParameterHash = Animator.StringToHash(_movingParameterName);
@@ -91,9 +99,13 @@ namespace Characters.Player.Data.Animations
 
             AimingParameterHash = Animator.StringToHash(_aimingParameterName);
             FiringParameterHash = Animator.StringToHash(_firingParameterName);
+            ReloadParameterHash = Animator.StringToHash(_reloadingParameterName);
+            EquippingParameterHash = Animator.StringToHash(_equippingParameterName);
+            ComboParameterHash = Animator.StringToHash(_comboParameterName);
 
             HorizontalParameterHash = Animator.StringToHash(HorizontalParameterName);
             VerticalParameterHash = Animator.StringToHash(VerticalParameterName);
         }
+
     }
 }

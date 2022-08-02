@@ -25,11 +25,6 @@ namespace Inventory.Core
                 _itemSlots[i] ??= new ItemSlot();
             }
 
-            if (_database == null)
-            {
-                //_database = Resources.Load<ItemDatabase>("Database");
-            }
-
             for (int i = 0; i < _itemSlots.Length; i++)
             {
                 if (_itemSlots[i].Item == null)

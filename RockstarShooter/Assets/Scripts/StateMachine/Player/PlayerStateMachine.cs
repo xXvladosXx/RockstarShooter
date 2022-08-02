@@ -13,7 +13,7 @@ namespace StateMachine.Player
         public AliveEntityStateReusableData ReusableData { get; }
 
         private PlayerMovementStateMachine PlayerMovementStateMachine { get; }
-        private PlayerCombatStateMachine PlayerCombatStateMachine { get; }
+        private PlayerCombatStateMachine PlayerCombatStateMachine { get; set; }
 
         public PlayerStateMachine(Player player)
         {
@@ -21,20 +21,36 @@ namespace StateMachine.Player
 
             ReusableData = new AliveEntityStateReusableData();
 
-           // PlayerCombatStateMachine = new PlayerCombatStateMachine(Player);
+            PlayerCombatStateMachine = new PlayerMeleeCombatStateMachine(Player);
             PlayerMovementStateMachine = new PlayerMovementStateMachine(Player);
+
+            foreach (var movementState in PlayerMovementStateMachine.MovementStates)
+            {
+                movementState.SetPlayerStateMachine(this);
+            }
+        }
+
+        public void ChangeCombatStateMachine(PlayerCombatStateMachine playerCombatStateMachine)
+        {
+            PlayerCombatStateMachine.ExitCurrentState();
+            PlayerCombatStateMachine = playerCombatStateMachine;
+            ChangeState(PlayerCombatStateMachine.PlayerBaseIdleState);
         }
 
         public override List<IState> ChangeState(IState newState)
         {
-            var states = new List<IState>();
-
+            var states = new List<IState>() { newState };
+            
             for (int i = 0; i < states.Count; i++)
             {
-                switch (newState)
+                var state = states[i];
+                state.SetPlayerStateMachine(this);
+                
+                switch (state)
                 {
                     case IMovementState movementState:
                     {
+                        if(movementState == PlayerMovementStateMachine.GetState()) continue;
                         var newStates = PlayerMovementStateMachine.ChangeState(movementState);
                         if (newStates != null)
                             states.AddRange(newStates);
@@ -42,6 +58,7 @@ namespace StateMachine.Player
                     }
                     case ICombatState combatState:
                     {
+                        if(combatState== PlayerCombatStateMachine.GetState()) continue;
                         var newStates = PlayerCombatStateMachine.ChangeState(combatState);
                         if (newStates != null)
                             states.AddRange(newStates);
@@ -56,53 +73,55 @@ namespace StateMachine.Player
         public override void OnTriggerEnter(Collider collider)
         {
             PlayerMovementStateMachine.OnTriggerEnter(collider);
-
+            PlayerCombatStateMachine.OnTriggerEnter(collider);
         }
 
         public override void OnTriggerExit(Collider collider)
         {
             PlayerMovementStateMachine.OnTriggerExit(collider);
-
+            PlayerCombatStateMachine.OnTriggerExit(collider);
         }
 
         public void StartState()
         {
-            PlayerMovementStateMachine.ChangeState(PlayerMovementStateMachine.IdlingState);
+            ChangeState(PlayerMovementStateMachine.IdlingState);
+            ChangeState(PlayerCombatStateMachine.PlayerBaseIdleState);
         }
 
         public override void Update()
         {
             PlayerMovementStateMachine.Update();
+            PlayerCombatStateMachine.Update();
         }
 
         public override void HandleInput()
         {
             PlayerMovementStateMachine.HandleInput();
-
+            PlayerCombatStateMachine.HandleInput();
         }
 
         public override void PhysicsUpdate()
         {
             PlayerMovementStateMachine.PhysicsUpdate();
-
+            PlayerCombatStateMachine.PhysicsUpdate();
         }
 
         public override void OnAnimationEnterEvent()
         {
             PlayerMovementStateMachine.OnAnimationEnterEvent();
-
+            PlayerCombatStateMachine.OnAnimationEnterEvent();
         }
 
         public override void OnAnimationExitEvent()
         {
             PlayerMovementStateMachine.OnAnimationExitEvent();
-
+            PlayerCombatStateMachine.OnAnimationExitEvent();
         }
 
         public override void OnAnimationTransitionEvent()
         {
             PlayerMovementStateMachine.OnAnimationTransitionEvent();
-
+            PlayerCombatStateMachine.OnAnimationTransitionEvent();
         }
     }
 }

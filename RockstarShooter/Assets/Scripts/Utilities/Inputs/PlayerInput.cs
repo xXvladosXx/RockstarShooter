@@ -13,7 +13,7 @@ namespace Characters.Player.Utilities.Inputs
         public Vector2 Look { get; private set; }
         public bool Fire { get; private set; }
 
-        private void Awake()
+        public void Init()
         {
             InputActions = new PlayerInputActions();
 

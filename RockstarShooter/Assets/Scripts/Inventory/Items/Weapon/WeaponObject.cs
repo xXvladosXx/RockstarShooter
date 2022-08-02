@@ -1,89 +1,69 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bonuses;
+using Bonuses.CoreBonuses;
+using Characters.Player.Utilities.Colliders;
 using Combat;
+using Inventory.Core;
 using Inventory.Items.Bullet;
+using StateMachine.Player.StateMachines.Combat;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityTimer;
+using Utilities;
+using Utilities.Extensions;
 using Random = UnityEngine.Random;
 
 namespace Inventory.Items.Weapon
 {
-    public class WeaponObject : MonoBehaviour
+    public abstract class WeaponObject : ItemObject
     {
-        [field: SerializeField] public Transform PointToSpawnEmission { get; private set; }
         [field: SerializeField] public ParticleSystem[] Emissions { get; private set; }
+        [field: SerializeField] public ParticleSystem SmokeEmission { get; private set; }
         [field: SerializeField] public WeaponItem WeaponItem { get; private set; }
+        [field: SerializeField] public float SpreadModifier { get; private set; } = 25;
+        [field: SerializeField] public GameObject Magazine { get; private set; } 
+        [field: SerializeField] public Transform MagazinePosition { get; private set; }
+        [field: SerializeField] public Transform EmissionPosition { get; private set; }
+        [field: SerializeField] public float TimeToDestroyMagazine { get; private set; } = 3;
+        [field: SerializeField] public float TimeToEmissionRelease { get; private set; } = 1;
+        
+        public bool WasLoaded { get; protected set; }
+        public float AimSpread { get; protected set; }
 
-        private Timer _timer;
-        private float _currentSpread;
+        protected GameObject CurrentMagazine;
+        
+        public abstract event Action OnReload;
+        public abstract event Action<int> OnMagazineChanged;
 
-        private void Start()
+        public abstract void Init(PlayerCameraSwitcher playerCameraSwitcher);
+
+        protected virtual void Update()
         {
-            _currentSpread = WeaponItem.MinSpread;
+           
         }
 
-        public void SpawnEmission(AttackData attackData)
+        public abstract bool CanMakeAttack();
+        public abstract void MakeAttack(AttackData attackData);
+
+
+        public virtual void ReloadFinished()
         {
-            Timer.Cancel(_timer);
-
-            float attackDataAccuracyModifier = 1;
-            if (attackData.AccuracyModifier / 100 != 0)
-            {
-                attackDataAccuracyModifier = attackData.AccuracyModifier / 100;
-            }
-            
-            attackDataAccuracyModifier = 1 / attackDataAccuracyModifier;
-            
-            _currentSpread = Mathf.Clamp( _currentSpread+WeaponItem.SpreadPerFire * attackDataAccuracyModifier, 
-                WeaponItem.MinSpread * attackDataAccuracyModifier, WeaponItem.MaxSpread * attackDataAccuracyModifier);
-            
-            foreach (var emission in Emissions)
-            {
-                emission.transform.position = PointToSpawnEmission.position;
-                emission.transform.parent = null;
-                emission.Play();
-                emission.Emit(1);
-            }
-
-            var directionWithSpread = SpawnProjectile(attackData, out var currentBullet);
-
-            AddForce(currentBullet, directionWithSpread);
-
-            ReduceSpread();
         }
 
-        private void AddForce(BulletObject currentBullet, Vector3 directionWithSpread)
+        public virtual void DropMagazine()
         {
-            currentBullet.transform.forward = directionWithSpread.normalized;
-            currentBullet.GetComponent<Rigidbody>()
-                .AddForce(directionWithSpread.normalized * WeaponItem.ShootForce, ForceMode.Impulse);
         }
 
-        private Vector3 SpawnProjectile(AttackData attackData, out BulletObject currentBullet)
+        public virtual void SetMagazine(GameObject magazine)
         {
-            Vector3 aimDirection = Vector3.zero;
-            if (attackData.RaycastHit.HasValue)
-            {
-                aimDirection = (attackData.RaycastHit.Value.point - PointToSpawnEmission.position).normalized;
-            }
-
-            float spreadX = Random.Range(-_currentSpread, _currentSpread);
-            float spreadY = Random.Range(-_currentSpread, _currentSpread);
-
-            Vector3 directionWithSpread = aimDirection + new Vector3(spreadX, spreadY, 0);
-            currentBullet = Instantiate(WeaponItem.BulletObject, PointToSpawnEmission.position,
-                Quaternion.LookRotation(aimDirection, Vector3.up));
-            
-            currentBullet.SetRightAngleDependingOnRaycast(attackData.RaycastHit);
-            return directionWithSpread;
         }
 
-        private void ReduceSpread()
+        public virtual void LoadMagazine()
         {
-            _timer = Timer.Register(WeaponItem.TimeToReduceSpread, () => { _currentSpread = WeaponItem.MinSpread; }, (time) =>
-            {
-                var someVal = Mathf.Clamp(_currentSpread - time * WeaponItem.SpreadReduceModifier, WeaponItem.MinSpread,
-                    WeaponItem.MaxSpread);
-            });
         }
+
+       
     }
 }
